@@ -5,6 +5,7 @@ import Typography from '@mui/joy/Typography';
 import TextField from '@mui/joy/TextField';
 import Button from '@mui/joy/Button';
 import Link from '@mui/joy/Link';
+import {signInWithGoogle} from '../Firebase.js'
 
 function ModeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -71,7 +72,11 @@ export default function LoginPage() {
             placeholder="password"
             label="Password"
           />
-          <Button sx={{ mt: 1 /* margin top */ }}>Log in</Button>
+          <Button sx={{ mt: 1 /* margin top */ }}
+            onClick={signInWithGoogle}
+          >
+            Log in
+          </Button>
           <Typography
             endDecorator={<Link href="/sign-up">Sign up</Link>}
             fontSize="sm"
