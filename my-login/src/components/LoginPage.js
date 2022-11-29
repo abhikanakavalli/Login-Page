@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { useRef, useState } from 'react';
 import { CssVarsProvider, useColorScheme } from '@mui/joy/styles';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
 import TextField from '@mui/joy/TextField';
 import Button from '@mui/joy/Button';
 import Link from '@mui/joy/Link';
-import {signInWithGoogle} from '../Firebase.js'
+import {signInWithGoogle, signUp, useAuth, logOut} from '../Firebase.js'
 
 function ModeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -33,6 +34,31 @@ function ModeToggle() {
 }
 
 export default function LoginPage() {
+    const emailRef = useRef();
+    const passwordRef = useRef();
+    const [loading, setLoading] = useState(false);
+    const currentUser = useAuth();
+
+    async function handleLogout(){
+        setLoading(true);
+        try{
+            await logOut()
+        }catch{
+            alert('error!')
+        }
+        setLoading(false);
+    }
+
+    async function handleSignUp(){
+        setLoading(true);
+        try{
+            await signUp(emailRef.current.value, passwordRef.current.value);
+        }catch{
+            alert("Error!")
+        }
+        setLoading(false);
+    }
+
   return (
     <CssVarsProvider>
       <main>
@@ -56,7 +82,7 @@ export default function LoginPage() {
             <Typography level="h4" component="h1">
               <b>Welcome!</b>
             </Typography>
-            <Typography level="body2">Sign in to continue.</Typography>
+            <Typography level="body2">Sign in by {currentUser?.email}</Typography>
           </div>
           <TextField
             // html input attribute
@@ -65,18 +91,27 @@ export default function LoginPage() {
             placeholder="johndoe@email.com"
             // pass down to FormLabel as children
             label="Email"
+            ref={emailRef}
           />
           <TextField
             name="password"
             type="password"
             placeholder="password"
             label="Password"
+            ref={passwordRef}
           />
-          <Button sx={{ mt: 1 /* margin top */ }}
-            onClick={signInWithGoogle}
+          <button sx={{ mt: 1 /* margin top */ }}
+            disable={loading || currentUser}
+            onClick={handleSignUp}
           >
             Log in
-          </Button>
+          </button>
+          <button sx={{ mt: 1 /* margin top */ }}
+            disable={loading || !currentUser}
+            onClick={handleLogout}
+          >
+            Log out
+          </button>
           <Typography
             endDecorator={<Link href="/sign-up">Sign up</Link>}
             fontSize="sm"
